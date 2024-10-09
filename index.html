@@ -1,58 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teachable Machine Demo</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
-    <style>
-        #camera {
-            width: 100%;
-            height: auto;
-        }
-    </style>
-</head>
-<body>
-    <h1>Teachable Machine Model</h1>
-    <video id="camera" autoplay></video>
-    <button onclick="init()">Click to detect</button>
-    <h2 id="result">Prediction Result: </h2>
+    <script src="https://your-hosted-model-url/model.json"></script>
 
     <script>
-        let model, webcam;
+        // Load the model and handle predictions
+        let model;
 
-        async function init() {
-            const modelURL = 'https://https://github.com/Reyansh-abc/teachable-machine-web.git/model.json';
-            
-            model = await tmImage.load(modelURL);
-            webcam = new tmImage.Webcam(200, 200, true); // width, height, flipped
-            await webcam.setup(); // request access to the webcam
-            await webcam.play();
-            window.requestAnimationFrame(loop);
-            document.getElementById('camera').appendChild(webcam.canvas);
-        }
-
-        async function loop() {
-            webcam.update(); // update the webcam frame
-            await predict();
-            window.requestAnimationFrame(loop);
+        async function loadModel() {
+            model = await tf.loadGraphModel('https://your-hosted-model-url/model.json');
+            console.log('Model Loaded');
         }
 
         async function predict() {
-            const prediction = await model.predict(webcam.canvas);
-            let highestProb = 0;
-            let label = "";
+            // Assuming there's some image or webcam input, adapt this part to your needs
+            const img = document.getElementById('input-image');
+            const predictions = await model.predict(tf.browser.fromPixels(img).expandDims(0));
+            
+            // Log and handle predictions here
+            console.log(predictions);
+            alert('Prediction done!');
+        }
 
-            prediction.forEach((p) => {
-                if (p.probability > highestProb) {
-                    highestProb = p.probability;
-                    label = p.className;
-                }
-            });
-
-            document.getElementById("result").innerText = `Prediction Result: ${label}`;
+        window.onload = function() {
+            loadModel();
         }
     </script>
+</head>
+<body>
+    <h1>Teachable Machine Prediction</h1>
+    <img id="input-image" src="your-image-url.jpg" alt="Test Image" />
+    <button onclick="predict()">Start Prediction</button>
 </body>
 </html>
