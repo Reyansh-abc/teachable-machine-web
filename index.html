@@ -3,14 +3,14 @@
 <head>
     <title>Teachable Machine Demo</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://your-hosted-model-url/model.json"></script>
+    <script src="https://github.com/Reyansh-abc/teachable-machine-web.git/model.json"></script>
 
     <script>
         // Load the model and handle predictions
         let model;
 
         async function loadModel() {
-            model = await tf.loadGraphModel('https://your-hosted-model-url/model.json');
+            model = await tf.loadGraphModel('https://github.com/Reyansh-abc/teachable-machine-web.git/model.json');
             console.log('Model Loaded');
         }
 
@@ -32,6 +32,40 @@
 <body>
     <h1>Teachable Machine Prediction</h1>
     <img id="input-image" src="your-image-url.jpg" alt="Test Image" />
-    <button onclick="predict()">Start Prediction</button>
+    <button onclick="predict()">Clic</button>
 </body>
 </html>
+<video id="webcam" autoplay playsinline></video>
+<canvas id="canvas"></canvas>
+
+<script>
+    async function setupWebcam() {
+        const webcamElement = document.getElementById('webcam');
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        webcamElement.srcObject = stream;
+        return new Promise((resolve) => {
+            webcamElement.onloadedmetadata = () => {
+                resolve();
+            };
+        });
+    }
+
+    function captureImage() {
+        const canvas = document.getElementById('canvas');
+        const video = document.getElementById('webcam');
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        return canvas;
+    }
+
+    async function predict() {
+        const canvas = captureImage();
+        const img = tf.browser.fromPixels(canvas);
+        const predictions = await model.predict(img.expandDims(0));
+        console.log(predictions);
+    }
+
+    window.onload = async function() {
+        await loadModel();
+        await setupWebcam();
+    };
+</script>
