@@ -69,3 +69,27 @@
         await setupWebcam();
     };
 </script>
+<html>
+<head>
+    <title>Test Model</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script>
+        let model;
+        
+        async function loadModel() {
+            try {
+                model = await tf.loadGraphModel('https://github.com/Reyansh-abc/teachable-machine-web.git/model.json');
+                console.log("Model loaded successfully");
+            } catch (error) {
+                console.error("Error loading model:", error);
+            }
+        }
+
+        loadModel();
+    </script>
+</head>
+<body>
+    <h1>Model Loading Test</h1>
+    <p>Open the console to see logs.</p>
+</body>
+</html>
